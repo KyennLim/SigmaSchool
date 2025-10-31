@@ -20,7 +20,7 @@ export default function App(){
                 <RequireAuth>
                     <Dashboard/>
                 </RequireAuth>
-                } path="/" 
+                } path="/Dashboard" 
                 />
         </Routes>
         </BrowserRouter>
