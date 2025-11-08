@@ -18,6 +18,7 @@ export default function AddTodo() {
                     type="text"
                     placeholder="Get software development job"
                     required
+                    
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="description">
