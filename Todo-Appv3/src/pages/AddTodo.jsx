@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
+import { TodoContext } from "../contexts/TodoContext";
+import { Navigate } from "react-router-dom";
 
 export default function AddTodo() {
     const [completed, setCompleted] = useState("");
     const [description, setDescription] = useState("");
     const [title, setTitle] = useState("");
+    const setTodos = useContext(TodoContext).setTodos;
+    const todos = useContext(TodoContext).todos;
+    // const navigate = Navigate();
 
     return (
         <Container>
             <h1>Add Todo</h1>
-            <Form>
+            <Form onClick={event => {
+                event.preventDefault()
+                setTodos([
+                    ...todos,
+                    {id:Date.now, title, description, completed},
+                ])
+            }}>
                 <Form.Group className="mb-3" controlId="title">
                     <Form.Label>Title</Form.Label>
                     <Form.Control
@@ -33,7 +44,7 @@ export default function AddTodo() {
                     />
                 </Form.Group>
                 <Form.Check
-                    type="checkebox"
+                    type="checkbox"
                     id="completed"
                     label="Mark as complete"
                     checked={completed}

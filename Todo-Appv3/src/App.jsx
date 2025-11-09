@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route} from "react-router-dom"
 import Home from "./pages/Home"
 import ErrorPage from "./pages/ErrorPage"
 import AddTodo from "./pages/AddTodo"
-import "bootstrap"
+import 'bootstrap/dist/css/bootstrap.min.css';
+import useLocalStorage from "use-local-storage";
+import { TodoContext } from "./contexts/TodoContext";
 
 
 export function Layout(){
@@ -19,7 +21,9 @@ export function Layout(){
 }
 
 export default function App() {
+  const [todos, setTodos] = useLocalStorage("todos", []);
   return (
+    <TodoContext.Provider value={{todos, setTodos}}>
     <BrowserRouter>
     <Routes>
       <Route path="/" element ={<Layout />}/>
@@ -28,6 +32,7 @@ export default function App() {
       <Route path="*" element ={<ErrorPage />}/>
     </Routes>
     </BrowserRouter>
+    </TodoContext.Provider>
 
   )
 }
