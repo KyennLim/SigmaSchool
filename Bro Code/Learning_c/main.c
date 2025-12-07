@@ -3,102 +3,107 @@
 /* ===================================
    CHALLENGE 1: Hello World
    =================================== */
-void challenge1() {
-    printf("\n=== CHALLENGE 1: Hello World ===\n");
-    // TODO: Print "Hello, World!" to the screen
-    
-    
-}
-
+// void challenge1()
+// {
+//     printf("\n=== CHALLENGE 1: Hello World ===\n");
+//     // TODO: Print "Hello, World!" to the screen
+//     printf("Hello World!");
+// }
 
 /* ===================================
    CHALLENGE 2: Variables & Math
    =================================== */
-void challenge2() {
-    printf("\n=== CHALLENGE 2: Variables & Math ===\n");
-    // TODO: Create two integer variables (a and b)
-    // Set a = 10, b = 20
-    // Print their sum
-    
-    
-}
-
+// void challenge2()
+// {
+//     printf("\n=== CHALLENGE 2: Variables & Math ===\n");
+//     // TODO: Create two integer variables (a and b)
+//     // Set a = 10, b = 20
+//     // Print their sum
+//     int a = 10;
+//     int b = 20;
+//     printf("%d\n", a + b);
+// }
 
 /* ===================================
    CHALLENGE 3: Arrays
    =================================== */
-void challenge3() {
-    printf("\n=== CHALLENGE 3: Arrays ===\n");
-    // TODO: Create an array of 5 integers: {2, 4, 6, 8, 10}
-    // Use a loop to print each number
-    
-    
-}
-
+// void challenge3()
+// {
+//     printf("\n=== CHALLENGE 3: Arrays ===\n");
+//     // TODO: Create an array of 5 integers: {2, 4, 6, 8, 10}
+//     // Use a loop to print each number
+//     int array[] = {2, 4, 6, 8, 10};
+//     for (int i = 0; i < 5; i++)
+//     {
+//         printf("%d ", array[i]);
+//     }
+//     printf("\n");
+// }
 
 /* ===================================
    CHALLENGE 4: Pointers (Basic)
    =================================== */
-void challenge4() {
-    printf("\n=== CHALLENGE 4: Pointers ===\n");
-    int x = 42;
-    
-    // TODO: Create a pointer to x
-    // Print the value of x using the pointer
-    // Hint: int *ptr = &x;
-    
-    
-}
+void challenge4()
+{
+    //     printf("\n=== CHALLENGE 4: Pointers ===\n");
+    //     int x = 42;
 
+    //     // TODO: Create a pointer to x
+    //     // Print the value of x using the pointer
+    //     // Hint: int *ptr = &x;
+    //     int *ptr = &x;
+    //     printf("%d", *ptr);
+}
 
 /* ===================================
    CHALLENGE 5: Pointer to modify value
    =================================== */
-void challenge5() {
+void challenge5()
+{
     printf("\n=== CHALLENGE 5: Modify with Pointer ===\n");
     int num = 5;
-    
+
     // TODO: Create a pointer to num
     // Use the pointer to change num to 100
     // Print the new value
     // Hint: *ptr = 100;
-    
-    
+    int *ptr = &num;
+    *ptr = 100;
+    printf("%d", num);
 }
-
 
 /* ===================================
    CHALLENGE 6: Array with Pointer
    =================================== */
-void challenge6() {
+void challenge6()
+{
     printf("\n=== CHALLENGE 6: Array with Pointer ===\n");
     int numbers[] = {10, 20, 30, 40, 50};
-    
+
     // TODO: Create a pointer to the array
     // Use pointer arithmetic to print the 3rd element (30)
     // Hint: int *ptr = numbers; then *(ptr + 2)
-    
-    
+    int *ptr = numbers;
+    printf("%d", *(ptr + 2));
 }
 
-
-int main() {
+int main()
+{
     printf("====================================\n");
     printf("   C PROGRAMMING CHALLENGES\n");
     printf("====================================\n");
-    
+
     // Uncomment each challenge as you complete them!
-    
-    challenge1();
+
+    // challenge1();
     // challenge2();
     // challenge3();
     // challenge4();
     // challenge5();
-    // challenge6();
-    
+    challenge6();
+
     return 0;
 }
-
 
 /* ===================================
    SOLUTIONS (Don't peek until you try!)
