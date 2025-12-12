@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 
 function BusService({busArrivalData}) {
-
-
-
   return (
     <ul>
       {busArrivalData.services.map(service => {
@@ -12,11 +9,20 @@ function BusService({busArrivalData}) {
         const result = arrival < 0 ? `Arrived` : `${arrival} minutes`
 
         return (
-          <li key={busNumber}>Bus {busNumber}: {result}</li>
+          <div>
+          `<h2>Bus Services</h2>
+          <li key={busNumber}>Bus {busNumber}: {result}</li>`
+          </div>
         )
       })}
     </ul>
   )
+}
+
+async function fetchBusArrival(id) {
+  const response = await fetch(`https://sg-bus-arrivals.vercel.app/?id=${id}`);
+  const data = await response.json();
+  return data
 }
 
 export default function App() {
@@ -24,13 +30,15 @@ export default function App() {
   const [busArrivalData, setBusArrivalData] = useState([])
   const [loading, setLoading] = useState(false)
 
-  if(busStopId){
-    setLoading(true);
-    fetchBusArrival(busStopId)
-    .then(data => setBusArrivalData(data))
-    .catch(error => console.error(error))
-    .finally(() => setLoading(false))
-  }
+  useEffect(() =>{
+    if(busStopId){
+      setLoading(true);
+      fetchBusArrival(busStopId)
+      .then(data => setBusArrivalData(data))
+      .catch(error => console.error(error))
+      .finally(() => setLoading(false))
+    }
+  },[busStopId])
 
   function handleInputChange(event) {
     setBusStopId(event.target.value);
@@ -39,14 +47,14 @@ export default function App() {
   return (
     <div>
       <h1>Bus Arrival App</h1>
-      <input 
-      type="text" 
-      value = {busStopId}
-      onChange={handleInputChange}
-      placeholder="Enter Bus Stop ID"
+      <input
+      type="text"
+      value={busStopId}
+      onChange={(event) => handleInputChange(event)}
+      placeholder="Enter Bus Stop Id"
       />
-      {loading && <p>Loading...<p/>}
-      {busArrivalData &7 busArrivalData.services && (
+      {loading && <p>Loading...</p>}
+      {busArrivalData && busArrivalData.services && (
         <>
         <h2>Bus Stop {busArrivalData.bus_stop_id}</h2>
         <BusService busArrivalData={busArrivalData}/>
