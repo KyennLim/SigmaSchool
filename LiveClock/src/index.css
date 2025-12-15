@@ -1,0 +1,46 @@
+
+body{
+  margin: 0;
+  padding: 0;
+  background-color: cornflowerblue;
+
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.live-Clock > button{
+  height: 30px;
+  width: 100px;
+
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5em;
+  text-align: center;
+  margin: 0px 5px;
+
+  border: none;
+  border-radius: 10px;
+  transition: 0.5s ease;
+}
+
+.stop-button:hover{
+  background-color: rgba(88, 75, 75, 0.586);
+  color: rgba(237, 247, 255, 0.818);
+  cursor: pointer;
+}
+
+.start-button:hover{
+  background-color: rgba(120, 124, 78, 0.586);
+  color: rgba(163, 198, 227, 0.939);
+  cursor: pointer;
+}
+
+.live-Clock{
+  background: rgba(255, 255, 255, 0.546);
+  padding: 30px;
+  border-radius: 30px;
+  font-family: 'Courier New', Courier, monospace;
+}
