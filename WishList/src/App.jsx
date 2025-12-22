@@ -4,7 +4,7 @@ import { addItem, clearWishList } from './wishListSlice';
 
 function App() {
   const [inputValue, setInputValue] = useState('');
-  const prevWishList = useSelector((state) => state.wishList);
+  const prevWishList = useSelector((state) => state.store);
   const dispatch = useDispatch();
 
   const handleAddItem = () => {
