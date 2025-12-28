@@ -4,6 +4,7 @@ import ProfileHeader from "./components/ProfileHeader";
 import { createContext } from "react";
 import { PROFILE_DATA } from "./data";
 import ImageGrid from "./components/ImageGrid";
+import AddPostModal from "./components/AddPostModal";
 
 export const ProfileContext = createContext(null);
 
