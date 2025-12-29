@@ -1,9 +1,9 @@
 
 import { useContext, useState } from "react";
 import { Button, Col, Form, Image, Modal, Row } from "react-bootstrap";
-import ProfileContext from "../App";
+import {ProfileContext} from "../App";
 
-function AddPostModal() {
+function AddPostModal({ show, handleClose}) {
     const { image, name } = useContext(ProfileContext);
 
     const [imageUrl, setImageUrl] = useState("");
