@@ -1,37 +1,35 @@
 
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Button, Col, Form, Image, Modal, Row } from "react-bootstrap";
 import {ProfileContext} from "../App";
-import { useDispatch, useSelector } from "react-redux";
 import { createPost } from "../features/posts/postsSlice";
-import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { updatePost } from "../features/posts/postsSlice";
 
-
-
-function UpdatePostModal({ show, handleClose, postId }) {
+function UpdatePostModal({ show, handleClose, postId}) {
     const { image, name } = useContext(ProfileContext);
     const dispatch = useDispatch();
 
-    const post = useSelector((state) =>
+    const post = useSelector((state) => 
         state.posts.find((post) => post.id === postId)
     );
-    const [imageUrl, setImageUrl] = useState(post ? post.image : "");
-    const [description, setDescription] = useState(post ? post.description : "");
+
+    const [imageUrl, setImageUrl] = useState("");
+    const [description, setDescription] = useState("");
     const [invalidUrl, setInvalidUrl] = useState(false);
 
     useEffect(() => {
-        if (post) {
+        if(post) {
             setImageUrl(post.image);
             setDescription(post.description);
         }
     }, [post]);
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (imageUrl) {
-            dispatch(updatePost({
-                id: postId,
+            dispatch(createPost({
+                id : postId,
                 image: imageUrl,
                 description,
             }));
@@ -50,6 +48,7 @@ function UpdatePostModal({ show, handleClose, postId }) {
     const handleImageLoad = () => {
         setInvalidUrl(false);
     }
+
 
     return (
         <Modal show={show} onHide={handleClose} size="lg">
@@ -72,17 +71,36 @@ function UpdatePostModal({ show, handleClose, postId }) {
                         <Image
                         src={image}
                         alt="uploader"
-                        style={{ width: `32px`}}
+                        style={{width: `32px`}}
                         roundedCircle
                         />
-                        <span className="ms-3">
-                            {name}
-                        </span>
+                        <span className="ms-3">{name}</span>
+                        <Form.Control
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        className="my-3"
+                        placeholder="Add image url"
+                        />
+                            {invalidUrl && (
+                                <div className="text-danger">
+                                    Invalid URL or failed to load image
+                                </div>
+                            )}
+                        <Form.Control
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="my-3"
+                        rows={3}
+                        placeholder="write a caption"
+                        />
+                        <Button type="submit" style={{ width: `100% `}}>
+                            share
+                        </Button>
                     </Col>
                 </Row>
             </Modal.Body>
         </Form>
-    </Modal>
+        </Modal>    
     );
 }
 
