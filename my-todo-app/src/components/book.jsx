@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { addBook, removeBook } from "../bookSlice";
 import { useState } from "react";
+import { Row, Col,  Button } from "react-bootstrap";
 
 const BookComponent = () => {
     const [title, setTitle] = useState("");
@@ -9,7 +10,8 @@ const BookComponent = () => {
     const dispatch = useDispatch();
 
     return (
-        <div>
+        <div className="container flex-column align-items-center justify-content-center">
+            <Row className="mb-3">
             <h2>book List</h2>
             <ul>
                 {books.map((book) => (
@@ -21,7 +23,8 @@ const BookComponent = () => {
                     </li>
                 ))}
             </ul>
-            <div>
+            </Row>
+            <Col md={4} className="mb-3">
                 <input
                     type="text"
                     value={title}
@@ -33,7 +36,7 @@ const BookComponent = () => {
                     <option value="in-progress">In Progress</option>
                     <option value="completed">Completed</option>
                 </select>
-                <button
+                <Button
                     onClick={() => {
                         dispatch(addBook({ id: Date.now() + books.length, title , readingStatus: status }));
                         setTitle("");
@@ -41,8 +44,8 @@ const BookComponent = () => {
                     }}
                 >
                     Add Book
-                </button>
-            </div>
+                </Button>
+            </Col>
         </div>
     )
 };
