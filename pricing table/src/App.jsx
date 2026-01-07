@@ -20,6 +20,36 @@ export default function App() {
               <button type="button" className="w-100 btn btn-lg btn-outline-primary">Sign up for free</button>
             </div>
           </div>
+          <div className="card mb-4 rounded-3 shadow-sm">
+            <div className="card-header py-3">
+              <h4 className="my-0 fw-normal">pro</h4>
+            </div>
+            <div className="card-body">
+              <h1 className="card-title pricing-card-title">$15 <small className="text-body-secondary fw-light">/mo</small></h1>
+              <ul className="list-unstyled mt-3 mb-4">
+                <li>20 users included</li>
+                <li>10 GB of storage</li>
+                <li>Priority Email support</li>
+                <li>Help center access</li>
+              </ul>
+              <button type="button" className="w-100 btn btn-lg btn-primary">Sign up for free</button>
+            </div>
+          </div>
+          <div className="card mb-4 rounded-3 shadow-sm">
+            <div className="card-header bg-primary py-3">
+              <h4 className="my-0 text-white fw-normal">Enterprise</h4>
+            </div>
+            <div className="card-body">
+              <h1 className="card-title pricing-card-title">$15 <small className="text-body-secondary fw-light">/mo</small></h1>
+              <ul className="list-unstyled mt-3 mb-4">
+                <li>20 users included</li>
+                <li>10 GB of storage</li>
+                <li>Priority Email support</li>
+                <li>Help center access</li>
+              </ul>
+              <button type="button" className="w-100 btn btn-lg btn-primary">Sign up for free</button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
