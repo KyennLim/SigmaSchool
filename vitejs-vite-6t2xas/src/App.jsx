@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from "react";
 
-const API_URL = "https://api.apo.example.com/data";
+const API_URL = "https://posts-demo-server.sigmashooltech.repl.co/posts";
 
 export default function App() {
   const [ posts, setposts] = useState([]);
