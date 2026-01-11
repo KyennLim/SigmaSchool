@@ -16,7 +16,7 @@ export default function App() {
   };
 
     // Fetch posts when component mounts
-  useEffect(() => {
+  useEffect(() => {s
     fetchPosts();
   }, []);
 

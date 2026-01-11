@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { deletePost } from "../App";
 
 const API = 'https://employees-three.vercel.app/employees'
 
@@ -48,32 +49,40 @@ function AddEmployee() {
                 type="text"
                 placeholder="name?"
                 value={name}
+                required
                 onChange={(e) => setName(e.target.value)}
                  />
                  <input 
                 type="text"
                 placeholder="position?"
                 value={position}
+                required
                 onChange={(e) => setPosition(e.target.value)}
                  />
                  <input 
                 type="text"
                 placeholder="department?"
                 value={department}
+                required
                 onChange={(e) => setDepartment(e.target.value)}
                  />
                  <input 
                 type="text"
                 placeholder="years At Company?"
                 value={yearsAtCompany}
+                required
                 onChange={(e) => setYearsAtCompany(e.target.value)}
                  />
                  <button type="submit">add Employee</button>
             </form>
+            {errorMessage && (
+                <p>errorMessage</p>
+            )}
             <ul>
                 {employees.map((employee) => (
                     <li key={employee.id}>
                         <p>{employee.name} - {employee.position} - {employee.department} - {employee.yearsAtCompany}</p>
+                        <button onClick={() => deletePost(employee.id)}>Delete</button>
                     </li>
                 ))}
             </ul>
