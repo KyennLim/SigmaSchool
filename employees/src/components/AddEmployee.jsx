@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { deletePost } from "../App";
 
 const API = 'https://employees-three.vercel.app/employees'
 
@@ -11,19 +10,20 @@ function AddEmployee() {
     const [yearsAtCompany, setYearsAtCompany] = useState('');
 
     // list and error
-    const [employees,setEmployees] = useState([]);
+    const [employees, setEmployees] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
     const fetchEmployees = () => {
         fetch(API)
             .then(res => res.json())
             .then(data => setEmployees(data))
-            .catch(err => setErrorMessage(err))
+            .catch(err => setErrorMessage(err.message))
     }
 
+    // Remove employees from dependency array - only fetch once on mount
     useEffect(() => {
         fetchEmployees();
-    },[]);
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -40,6 +40,28 @@ function AddEmployee() {
         setPosition('');
         setDepartment('');
         setYearsAtCompany('');
+    }
+
+    // Move deletePost inside the component so it has access to setEmployees
+    const deletePost = (id) => {
+        const deleteAPI = `${API}/${id}`;
+        fetch(deleteAPI, {
+            method: "DELETE",
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => {
+            if (res.ok) {
+                // Update local state
+                setEmployees(employees.filter(emp => emp.id !== id));
+            } else {
+                console.error(`Failed to delete employee ${id}: ${res.status}`);
+                setErrorMessage(`Failed to delete employee. Status: ${res.status}`);
+            }
+        })
+        .catch(err => {
+            console.error('Delete error:', err);
+            setErrorMessage('Error deleting employee');
+        });
     }
 
     return(
@@ -76,7 +98,7 @@ function AddEmployee() {
                  <button type="submit">add Employee</button>
             </form>
             {errorMessage && (
-                <p>errorMessage</p>
+                <p style={{color: 'red'}}>{errorMessage}</p>
             )}
             <ul>
                 {employees.map((employee) => (
