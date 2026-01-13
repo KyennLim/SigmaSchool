@@ -12,6 +12,9 @@ function AddEmployee() {
     // list and error
     const [employees, setEmployees] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    
+    // Track which employee is being edited
+    const [editingId, setEditingId] = useState(null);
 
     const fetchEmployees = () => {
         fetch(API)
@@ -20,7 +23,6 @@ function AddEmployee() {
             .catch(err => setErrorMessage(err.message))
     }
 
-    // Remove employees from dependency array - only fetch once on mount
     useEffect(() => {
         fetchEmployees();
     }, []);
@@ -42,7 +44,6 @@ function AddEmployee() {
         setYearsAtCompany('');
     }
 
-    // Move deletePost inside the component so it has access to setEmployees
     const deletePost = (id) => {
         const deleteAPI = `${API}/${id}`;
         fetch(deleteAPI, {
@@ -51,7 +52,6 @@ function AddEmployee() {
         })
         .then(res => {
             if (res.ok) {
-                // Update local state
                 setEmployees(employees.filter(emp => emp.id !== id));
             } else {
                 console.error(`Failed to delete employee ${id}: ${res.status}`);
@@ -62,6 +62,41 @@ function AddEmployee() {
             console.error('Delete error:', err);
             setErrorMessage('Error deleting employee');
         });
+    }
+
+    const updatePost = (id, updatedData) => {
+        const updateAPI = `${API}/${id}`;
+        fetch(updateAPI, {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        })
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            } else {
+                throw new Error(`Failed to update: ${res.status}`);
+            }
+        })
+        .then(() => {
+            fetchEmployees();
+            setEditingId(null);
+        })
+        .catch(err => {
+            console.error('Update error:', err);
+            setErrorMessage('Error updating employee');
+        });
+    }
+
+    const handleUpdate = (employee) => {
+        const updatedData = {
+            name: prompt("New name:", employee.name) || employee.name,
+            position: prompt("New position:", employee.position) || employee.position,
+            department: prompt("New department:", employee.department) || employee.department,
+            yearsAtCompany: prompt("Years at company:", employee.yearsAtCompany) || employee.yearsAtCompany
+        };
+        
+        updatePost(employee.id, updatedData);
     }
 
     return(
@@ -105,6 +140,7 @@ function AddEmployee() {
                     <li key={employee.id}>
                         <p>{employee.name} - {employee.position} - {employee.department} - {employee.yearsAtCompany}</p>
                         <button onClick={() => deletePost(employee.id)}>Delete</button>
+                        <button onClick={() => handleUpdate(employee)}>Update</button>
                     </li>
                 ))}
             </ul>
