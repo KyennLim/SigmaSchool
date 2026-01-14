@@ -1,9 +1,11 @@
 import AddEmployee from "./components/AddEmployee"
+import EmployeeDashboard from "./components/EmployeeDashboard";
 
 function App() {
   return(
     <div>
-      <AddEmployee/>
+      <h1>Company portal</h1>
+      <EmployeeDashboard/>
     </div>
   )
 };
