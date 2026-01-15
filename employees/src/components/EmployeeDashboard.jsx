@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 const API = 'https://employees-three.vercel.app/employees'
 
 function EmployeeDashboard() {
-    const [employees, setEmployees] = useState([]);  // Changed from {} to []
+    const [employees, setEmployees] = useState([]); 
     const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [department, setDepartment] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
