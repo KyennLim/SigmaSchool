@@ -13,8 +13,18 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
-
 app.use(cors());
+app.use(express.json()); // Add this to parse JSON bodies
+
+const { Pool } = pg; // Changed from require
+const { DATABASE_URL } = process.env;
+
+const pool = new Pool({
+    connectionString: DATABASE_URL,
+    ssl: {
+        require: true
+    }
+});
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
