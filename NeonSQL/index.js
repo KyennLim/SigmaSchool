@@ -30,10 +30,26 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+// NEW: Route to fetch data from the 'db' table
+app.get("/data", async (req, res) => {
+  try {
+    // 1. Get a client from the pool
+    const result = await pool.query('SELECT * FROM db'); 
+    
+    // 2. Send the rows back to the client
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // Catch 404 and forward to error handler
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, "404.html"));
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
