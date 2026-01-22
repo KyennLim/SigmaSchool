@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 app.get("/data", async (req, res) => {
   try {
     // 1. Get a client from the pool
-    const result = await pool.query('SELECT * FROM db'); 
+    const result = await pool.query('SELECT * FROM menu'); 
     
     // 2. Send the rows back to the client
     res.json(result.rows);
