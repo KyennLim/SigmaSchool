@@ -29,13 +29,25 @@
                     return;
                 }
 
-                // Loop through the data and create HTML for each row
+                // First view: Full JSON
                 data.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item';
-                    // Change 'JSON.stringify(item)' to a specific column name 
-                    // like 'item.name' once you know your column names!
-                    div.textContent = JSON.stringify(item); 
+                    div.textContent = JSON.stringify(item);
+                    container.appendChild(div);
+                });
+
+                // Second view: ID and Name only
+                // Loop through each menu item
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item';
+                    div.innerHTML = `
+                        <strong>${item.name}</strong><br>
+                        Price: $${item.price}<br>
+                        Category: ${item.category}<br>
+                        ID: ${item.id}
+                    `;
                     container.appendChild(div);
                 });
 
