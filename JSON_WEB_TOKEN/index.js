@@ -14,7 +14,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const { DATABASE_URL } = process.env;
+const { DATABASE_URL, SECRET_KEY } = process.env;
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -66,6 +66,36 @@ app.post('/signup', async (req, res) => {
         client.release();
     }
 })
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const { username, password } = req.body;
+        
+        const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+
+        const user = result.rows[0];
+
+        if (!user) return res.status(400).json({ message: "Invalid username or password."});
+
+        const passwordIsValid = await bcrypt.compare(password, user.password);
+        if (!passwordIsValid) return res.status(400).json({ auth: false, token: null });
+
+        const token = jwt.sign(
+            { id: user.id, username: user.username }, 
+            SECRET_KEY, 
+            { expiresIn: 86400 }
+        ); // 24 hours
+        
+        res.status(200).json({ auth: true, token: token });
+    } catch (error) {
+        console.error('Error: ', error.message)
+        res.status(500).json({error: error.message })
+    } finally {
+        client.release();
+    }
+});
 
 
 app.get("/", (req, res) => {
