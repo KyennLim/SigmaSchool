@@ -97,6 +97,25 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// username
+app.get('/username', async (req, res) => {
+    // Check if the Authorization Bearer was provided
+    const authToken = req.headers.authorization;
+
+    if (!authToken) return res.status(401).json({ error: 'Access Denied. '});
+
+
+    try {
+        // verify the token and fetch the user information
+        const verified = jwt.verify(authToken, SECRET_KEY);
+        res.json({
+            username: verified.username // Here, fetching the username from the token
+        });
+    } catch (error) {
+        res.status(400).json({ error: 'Invalid Token' });
+    }
+});
+
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
