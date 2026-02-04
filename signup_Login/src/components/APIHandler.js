@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import express, { json } from 'express';
 import cors from 'cors';
+import jwt from 'jsonwebtoken';
 import pkg from 'pg';
 const { Pool } = pkg;
 import path from 'path';
@@ -68,6 +69,35 @@ app.post('/signup', async (req, res) => {
     }
 })
 
+// Login endpoint
+app.post('/login', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const { username, password } = req.body;
+        
+        const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+        const user = result.rows[0];
+        console.log(user);
+        if (!user) return res.status(400).json({ message: "Invalid username or password."});
+
+        const passwordIsValid = await bcrypt.compare(password, user.password);
+        if (!passwordIsValid) return res.status(400).json({ auth: false, token: null });
+
+        const token = jwt.sign(
+            { id: user.id, username: user.username }, 
+            SECRET_KEY, 
+            { expiresIn: 86400 }
+        ); // 24 hours
+        
+        res.status(200).json({ auth: true, token: token });
+    } catch (error) {
+        console.error('Error: ', error.message)
+        res.status(500).json({error: error.message })
+    } finally {
+        client.release();
+    }
+});
+
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
@@ -75,7 +105,7 @@ app.get("/", (req, res) => {
 
 // Catch 404 and forward to error handler
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "404.html"));
+  res.status(404).json({ error: "Page not found" });
 });
 
 app.listen(3000, () => {

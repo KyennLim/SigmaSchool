@@ -9,6 +9,23 @@ function loginForm() {
         event.preventDefault();
         // Handle form submission logic here
 
+        fetch('http://localhost:3000/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Login successful!');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Login failed. Please try again.');
+        });
+
     };
     return (
         <div>
