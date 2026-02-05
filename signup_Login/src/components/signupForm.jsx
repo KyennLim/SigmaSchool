@@ -2,15 +2,13 @@ import {Form, Button } from 'react-bootstrap';
 import {useState, useEffect} from 'react';
 
 function signupForm() {
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     
     function handleSubmit(event) {
         event.preventDefault();
         // Handle form submission logic here
-
-        // remember to fetch db and match username so that they do not already exist
+        
         fetch('http://localhost:3000/signup', {
             method: 'POST',
             headers: {

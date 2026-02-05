@@ -69,34 +69,45 @@ app.post('/signup', async (req, res) => {
     }
 })
 
-// Login endpoint
 app.post('/login', async (req, res) => {
     const client = await pool.connect();
     try {
         const { username, password } = req.body;
+        console.log('Login attempt for username:', username);
         
         const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+        console.log('Query result rows:', result.rows.length);
+        
         const user = result.rows[0];
-        console.log(user);
-        if (!user) return res.status(400).json({ message: "Invalid username or password."});
+        
+        if (!user) {
+            console.log('User not found');
+            return res.status(400).json({ message: "Invalid username or password."});
+        }
 
+        console.log('User found:', user.username);
         const passwordIsValid = await bcrypt.compare(password, user.password);
-        if (!passwordIsValid) return res.status(400).json({ auth: false, token: null });
+        console.log('Password valid:', passwordIsValid);
+        
+        if (!passwordIsValid) {
+            return res.status(400).json({ auth: false, message: "Invalid username or password." });
+        }
 
         const token = jwt.sign(
             { id: user.id, username: user.username }, 
             SECRET_KEY, 
             { expiresIn: 86400 }
-        ); // 24 hours
+        );
         
         res.status(200).json({ auth: true, token: token });
     } catch (error) {
-        console.error('Error: ', error.message)
-        res.status(500).json({error: error.message })
+        console.error('Login error:', error.message);
+        res.status(500).json({ error: error.message });
     } finally {
         client.release();
     }
 });
+
 
 
 app.get("/", (req, res) => {

@@ -1,15 +1,17 @@
 import {Form, Button } from 'react-bootstrap';
 import {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function loginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     function handleSubmit(event) {
         event.preventDefault();
         // Handle form submission logic here
 
-        fetch('http://localhost:3000/signup', {
+        fetch('http://localhost:3000/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -19,7 +21,15 @@ function loginForm() {
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
-            alert('Login successful!');
+            // CHECK if auth is true
+            if (data.auth) {
+                alert('Login successful!');
+                // Store token in localStorage
+                localStorage.setItem('token', data.token);
+                navigate('/dashboard'); // Navigate to dashboard
+            } else {
+                alert('Login failed. Invalid username or password.');
+            }
         })
         .catch((error) => {
             console.error('Error:', error);
