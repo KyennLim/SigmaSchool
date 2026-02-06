@@ -108,6 +108,32 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Dashboard
+app.get('/dashboard', async (req, res) => {
+    // Check if the Authorization Bearer was provided
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Access Denied. No valid token provided.'});
+    }
+
+    // Extract token from "Bearer <token>" format
+    const token = authHeader.startsWith('Bearer ') 
+        ? authHeader.slice(7) 
+        : authHeader;
+
+      
+    try {
+        // verify the token and fetch the user information
+        const verified = jwt.verify(token, SECRET_KEY);
+        res.json({
+            username: verified.username // Here, fetching the username from the token
+        });
+    } catch (error) {
+        res.status(400).json({ error: 'Invalid Token' });
+    }
+});
+
 
 
 app.get("/", (req, res) => {

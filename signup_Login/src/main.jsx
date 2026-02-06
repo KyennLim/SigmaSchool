@@ -7,6 +7,7 @@ import LoginForm from './components/loginForm.jsx'
 import SignupForm from './components/signupForm.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -16,7 +17,7 @@ createRoot(document.getElementById('root')).render(
         <Link to="/signup">Signup</Link> 
       </nav>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/dashboard" element={<App />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
       </Routes>
