@@ -1,11 +1,22 @@
-
+// app.jsx
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function App() {
   const [username, setUsername] = useState('anonymous');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsername = async () => {
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found. Please log in.');
+        return;
+      } else {
+        navigate('/dashboard');
+      }
+      
       try {
         const response = await fetch('http://localhost:3000/dashboard', {
           method: 'GET',

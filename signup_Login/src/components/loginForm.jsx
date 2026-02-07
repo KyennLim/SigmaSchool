@@ -2,7 +2,7 @@ import {Form, Button } from 'react-bootstrap';
 import {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function loginForm() {
+function loginForm({ setTokenStatus }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -26,6 +26,7 @@ function loginForm() {
                 alert('Login successful!');
                 // Store token in localStorage
                 localStorage.setItem('token', data.token);
+                setTokenStatus(true); // Update token status in the parent component
                 navigate('/dashboard'); // Navigate to dashboard
             } else {
                 alert('Login failed. Invalid username or password.');
