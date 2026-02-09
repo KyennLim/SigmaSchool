@@ -3,6 +3,7 @@ import cors from 'cors';
 import pg from 'pg';
 const { Pool } = pg;
 import dotenv from 'dotenv';
+import process from 'process';
 
 dotenv.config();
 const { DATABASE_URL } = process.env;
@@ -32,7 +33,7 @@ async function getPostgesVersion() {
 
 getPostgesVersion();
 
-app.post('/post', async (req, res) => {
+app.post('/posts', async (req, res) => {
     const { title, content, user_id } = req.body;
     const client = await pool.connect();
 
@@ -48,6 +49,23 @@ app.post('/post', async (req, res) => {
             // User does not exist, send error response
             res.status(400).json({ error: "User does not exist" });
         }
+    } finally {
+        client.release();
+    }
+});
+
+// Adding a like to a post
+app.post('/likes', async (req, res) => {
+    const { post_id, user_id } = req.body;
+
+    const client = await pool.connect();
+    
+    try {
+        const newlike = await client.query('INSERT INTO likes (post_id, user_id) VALUES ($1, $2) RETURNING *', [post_id, user_id]);
+        res.json(newlike.rows[0]);
+    } catch(err) {
+        console.log(err.stack);
+        res.status(500).send('An error occurred, please try again later.');
     } finally {
         client.release();
     }
