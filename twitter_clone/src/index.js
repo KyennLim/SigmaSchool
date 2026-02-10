@@ -71,6 +71,40 @@ app.post('/likes', async (req, res) => {
     }
 });
 
+// Delete a like from a post
+app.delete('/likes/:id', async (req, res) => {
+    const { id } = req.params;
+    
+    const client = await pool.connect();
+
+    try {
+        await client.query('DELETE FROM likes WHERE id = $1', [id]);
+        res.json({ message: "Like deleted successfully" });
+    } catch(err) {
+        console.log(err.stack);
+        res.status(500).send('An error occurred, please try again later.');
+    } finally {
+        client.release();
+    }
+});
+
+// see all likes for a post
+app.get('/likes/post/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const client = await pool.connect();
+
+    try {
+        const likes = await client.query('SELECT * FROM likes WHERE post_id = $1', [id]);
+        res.json(likes.rows);
+    } catch(err) {
+        console.log(err.stack);
+        res.status(500).send('An error occurred, please try again later.');
+    } finally {
+        client.release();
+    }
+});
+
 app.get('/', (req, res) => {
     res.status(200).json({ message: "Welcome to the twitter API!"});
 });
