@@ -88,6 +88,24 @@ app.delete('/likes/:id', async (req, res) => {
     }
 });
 
+function incrementLikeCount(post_id) {
+    return new Promise((resolve, reject) => {
+        (async () => {
+            const client = await pool.connect();
+
+            try {
+                await client.query('UPDATE posts SET views = views + 1 WHERE id = $1', [post_id]);
+                resolve();
+            } catch(err) {
+                console.log(err.stack);
+                reject('An error occurred, please try again later.');
+            } finally {
+                client.release();
+            }
+        })();
+    });
+}
+
 // see all likes for a post
 app.get('/likes/post/:id', async (req, res) => {
     const { id } = req.params;
@@ -96,6 +114,7 @@ app.get('/likes/post/:id', async (req, res) => {
 
     try {
         const likes = await client.query(`SELECT users.username FROM likes JOIN users ON likes.user_id = users.id WHERE likes.post_id = $1`, [id]);
+        incrementLikeCount(id);
         res.json(likes.rows);
     } catch(err) {
         console.log(err.stack);
