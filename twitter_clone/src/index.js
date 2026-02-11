@@ -95,7 +95,7 @@ app.get('/likes/post/:id', async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const likes = await client.query('SELECT * FROM likes WHERE post_id = $1', [id]);
+        const likes = await client.query(`SELECT users.username FROM likes JOIN users ON likes.user_id = users.id WHERE likes.post_id = $1`, [id]);
         res.json(likes.rows);
     } catch(err) {
         console.log(err.stack);
