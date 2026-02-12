@@ -1,12 +1,5 @@
-import e from "express";
+import AuthPage from "./pages/AuthPage";
 
-
-function App() {
-  return (
-    <div className="App">
-      <h1>Twitter Clone</h1>
-    </div>
-  );
+export default function App() {
+  return <AuthPage />;
 }
-
-export default App;
