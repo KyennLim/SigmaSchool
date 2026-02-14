@@ -4,129 +4,114 @@ import pg from 'pg';
 const { Pool } = pg;
 import dotenv from 'dotenv';
 import process from 'process';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
-const { DATABASE_URL } = process.env;
+const { DATABASE_URL, SECRET_KEY } = process.env;
 
 let app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to the database
+
 const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
+    require: true,
+  },
+});
+
+async function getPostgresVersion() {
+  const client = await pool.connect();
+  try {
+    const res = await client.query('SELECT version()');
+    console.log(res.rows[0]);
+  } finally {
+    client.release();
+  }
+}
+
+getPostgresVersion();
+
+// Signup endpoint
+app.post('/signup', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    // Hash the password and check existence of username
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 12);
+    
+    // Check for existing username
+    const userResult = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    // If username already exists, return response
+    if (userResult.rows.length > 0) {
+      return res.status(400).json({ message: "Username already taken." });
+    }
+
+    await client.query('INSERT INTO users (username, password) VALUES ($1, $2)',
+      [username, hashedPassword]);
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    console.error('Error: ', error.message);
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
   }
 });
 
-async function getPostgesVersion() {
-    const client = await pool.connect();
+// Log in endpoint
+app.post('/login', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('SELECT * FROM users WHERE username = $1', [req.body.username]);
 
-    try {
-        const res = await client.query('SELECT version()');
-        console.log(res.rows[0].version);
-    } finally {
-        client.release();
-    }
-}
+    const user = result.rows[0];
 
-getPostgesVersion();
+    if (!user) return res.status(400).json({ message: "Username or password incorrect" });
 
-app.post('/posts', async (req, res) => {
-    const { title, content, user_id } = req.body;
-    const client = await pool.connect();
+    const passwordIsValid = await bcrypt.compare(req.body.password, user.password);
+    if (!passwordIsValid) return res.status(401).json({ auth: false, token: null });
 
-    try {
-        // check if user exists
-        const userExists = await client.query('SELECT * FROM users WHERE id = $1', [user_id]);
-        if (userExists.rows.length > 0) {
-            // User exist, add post
-            const post = await client.query('INSERT INTO posts (title, content, user_id, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *', [title, content, user_id]);
-            // Send new post data back to client
-            res.json(post.rows[0]);
-        } else {
-            // User does not exist, send error response
-            res.status(400).json({ error: "User does not exist" });
-        }
-    } finally {
-        client.release();
-    }
+    var token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: 86400 });
+    res.status(200).json({ auth: true, token: token });
+  } catch (error) {
+    console.error('Error: ', error.message);
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
+  }
 });
 
-// Adding a like to a post
-app.post('/likes', async (req, res) => {
-    const { post_id, user_id } = req.body;
+app.get('/username', (req, res) => {
+  // Check if the Authorization Bearer token was provided
+  const authToken = req.headers.authorization;
 
-    const client = await pool.connect();
-    
-    try {
-        const newlike = await client.query('INSERT INTO likes (post_id, user_id) VALUES ($1, $2) RETURNING *', [post_id, user_id]);
-        res.json(newlike.rows[0]);
-    } catch(err) {
-        console.log(err.stack);
-        res.status(500).send('An error occurred, please try again later.');
-    } finally {
-        client.release();
-    }
-});
+  if (!authToken) return res.status(401).json({ error: 'Access Denied' });
 
-// Delete a like from a post
-app.delete('/likes/:id', async (req, res) => {
-    const { id } = req.params;
-    
-    const client = await pool.connect();
-
-    try {
-        await client.query('DELETE FROM likes WHERE id = $1', [id]);
-        res.json({ message: "Like deleted successfully" });
-    } catch(err) {
-        console.log(err.stack);
-        res.status(500).send('An error occurred, please try again later.');
-    } finally {
-        client.release();
-    }
-});
-
-function incrementLikeCount(post_id) {
-    return new Promise((resolve, reject) => {
-        (async () => {
-            const client = await pool.connect();
-
-            try {
-                await client.query('UPDATE posts SET views = views + 1 WHERE id = $1', [post_id]);
-                resolve();
-            } catch(err) {
-                console.log(err.stack);
-                reject('An error occurred, please try again later.');
-            } finally {
-                client.release();
-            }
-        })();
+  try {
+    // Verify the token and fetch the user information
+    const verified = jwt.verify(authToken, SECRET_KEY);
+    res.json({
+      username: verified.username // Here, fetching the username from the token
     });
-}
-
-// see all likes for a post
-app.get('/likes/post/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const client = await pool.connect();
-
-    try {
-        const likes = await client.query(`SELECT users.username FROM likes JOIN users ON likes.user_id = users.id WHERE likes.post_id = $1`, [id]);
-        incrementLikeCount(id);
-        res.json(likes.rows);
-    } catch(err) {
-        console.log(err.stack);
-        res.status(500).send('An error occurred, please try again later.');
-    } finally {
-        client.release();
-    }
+  } catch (err) {
+    // Return an error if the token is not valid
+    res.status(400).json({ error: 'Invalid Token' });
+  }
 });
 
 app.get('/', (req, res) => {
-    res.status(200).json({ message: "Welcome to the twitter API!"});
+  res.sendFile(path.join(__dirname + '/index.html'));
 });
+
 app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+  console.log('App is listening on port 3000');
 });
