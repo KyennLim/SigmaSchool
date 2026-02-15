@@ -6,9 +6,11 @@ import axios from "axios";
 export default function AuthPage() {
     const loginImage = "https://sig1.co/img-twitter-1";
     const url = "http://localhost:3000";
-    const [show,setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+
+    // Possible values: null ( no madal shows), "login", "signUp"
+    const [modalShow, setModalShow] = useState(null);
+    const handleShowSignUp = () => setModalShow("signUp");
+    const handleShowLogin = () => setModalShow("login");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -23,6 +25,20 @@ export default function AuthPage() {
             console.error(err);
         }
     }
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${url}/login`, 
+                { username, password});
+        console.log(response.data);
+        }
+        catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleClose = () => setModalShow(null);
     
     return (
         <Row>
@@ -43,7 +59,7 @@ export default function AuthPage() {
                     <i className="bi bi-apple"></i> Sign up with Apple
                 </Button>
                 <p style={{ textAlign: "center"}}>or</p>
-                <Button className="rounded-pill" onClick={handleShow}>
+                <Button className="rounded-pill" onClick={handleShowSignUp}>
                     Create an account
                 </Button>
                 <p style={{ fontSize: "12px"}}>
@@ -53,15 +69,22 @@ export default function AuthPage() {
                 <p className="mt-5" style={{ fontWeight: "bold" }}>
                     Already have an account?
                 </p>
-                <Button className="rounded-pill" variant="outline-primary">Sign in</Button>
+                <Button className="rounded-pill" variant="outline-primary" onClick={handleShowLogin}>Sign in</Button>
                 </Col>
             </Col>
-            <Modal show={show} centered>
+            <Modal 
+                show={modalShow != null} 
+                centered
+                onHide={handleClose}
+                animation={false}
+            >
                 <Modal.Body>
                     <h2 className="mb-4" style={{ fontWeight: "bold"}}>
-                        Create your account
+                        {modalShow === "signUp" 
+                            ? "Create your account" 
+                            : "login to your account"}
                     </h2>
-                    <Form className="d-grid gap-2 px-5" onSubmit={handleSignUp}>
+                    <Form className="d-grid gap-2 px-5" onSubmit={modalShow === "signUp" ? handleSignUp : handleLogin}>
                         <Form.Group className="mb-3" controlId="formBasicUsername">
                             <Form.Control 
                             type="Email" 
@@ -69,19 +92,17 @@ export default function AuthPage() {
                             onChange={(e) => setUsername(e.target.value)} 
                             />
                         </Form.Group>
-                        <Form>
-                            <Form.Group className="mb-3" controlId="formBasicPassword">
-                                <Form.Control
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    type="password" 
-                                    placeholder="Password"
-                                />
-                            </Form.Group>
-                        </Form>
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Control
+                                onChange={(e) => setPassword(e.target.value)}
+                                type="password" 
+                                placeholder="Password"
+                            />
+                        </Form.Group>
                         <p style={{ fontSize: "12px"}}>
                             By signing up, you agree to the Terms of Service and Privacy Policy including Cookie use.
                         </p>
-                        <Button className="rounded-pill" type="submit">Sign up</Button>
+                        <Button className="rounded-pill" type="submit">{modalShow === "signUp" ? "Sign up" : "Sign in"}</Button>
                     </Form>
                 </Modal.Body>
             </Modal>
