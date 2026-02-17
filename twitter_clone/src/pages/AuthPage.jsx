@@ -1,7 +1,8 @@
 import { Row, Col, Image, Button, Modal, Form} from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import useLocalStorage from "use-local-storage";
+import { useNavigate } from "react-router-dom";
 
 
 export default function AuthPage() {
@@ -15,6 +16,18 @@ export default function AuthPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [authToken, setAuthToken] = useState("");
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        console.log("Checking for existing token in localStorage...");
+        if (token) {
+            console.log("Existing token found in localStorage, setting authToken state.");
+            setAuthToken(token);
+            navigate("/profile");
+        }
+    }, [authToken,navigate]);
 
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -108,7 +121,7 @@ export default function AuthPage() {
                         <p style={{ fontSize: "12px"}}>
                             By signing up, you agree to the Terms of Service and Privacy Policy including Cookie use.
                         </p>
-                        <Button className="rounded-pill" type="submit">{modalShow === "signUp" ? "Sign up" : "Sign in"}</Button>
+                        <Button className="rounded-pill" type="submit">{modalShow === "signUp" ? "Sign up" : "Log in"}</Button>
                     </Form>
                 </Modal.Body>
             </Modal>
