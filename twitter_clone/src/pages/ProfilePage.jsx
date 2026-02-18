@@ -1,7 +1,22 @@
 import { Container, Navbar, Button } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
-    const handleLogout = () => {};
+    const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken") || "");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!authToken) {
+            navigate("/login");
+        }
+    }, [authToken, navigate]);
+
+    const handleLogout = () => {
+        setAuthToken("");
+        localStorage.removeItem("authToken");
+        navigate("/login");
+    };
 
     return ( 
         <>
