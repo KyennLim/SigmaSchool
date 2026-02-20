@@ -15,19 +15,15 @@ export default function AuthPage() {
     const handleShowLogin = () => setModalShow("login");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [authToken, setAuthToken] = useState("");
+    const [authToken, setAuthToken] = useState(localStorage.getItem("authToken") || "");
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        console.log("Checking for existing token in localStorage...");
-        if (token) {
-            console.log("Existing token found in localStorage, setting authToken state.");
-            setAuthToken(token);
+        if (authToken) {
             navigate("/profile");
         }
-    }, [authToken,navigate]);
+    }, [authToken, navigate]);
 
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -46,10 +42,12 @@ export default function AuthPage() {
         try {
             const response = await axios.post(`${url}/login`, 
                 { username, password});
-            if (response.data && response.data.authToken === true && response.data.token) {
+            console.log(response.data.auth);
+            if (response.data && response.data.auth === true && response.data.token) {
                 setAuthToken(response.data.token);
                 localStorage.setItem("authToken", response.data.token);
                 console.log("Login successful, token stored saved.");
+                navigate("/profile");
             }
             console.log(response.data);
         } catch (err) {

@@ -1,6 +1,8 @@
-import { Container, Navbar, Button } from "react-bootstrap";
+import { Navbar, Button } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ProfileSideBar from "./components/ProfileSideBar";
 
 export default function ProfilePage() {
     const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken") || "");
@@ -19,25 +21,10 @@ export default function ProfilePage() {
     };
 
     return ( 
-        <>
-        <Navbar bg="light">
-            <Container>
-                <Navbar.Brand href="/">
-                    <i className="bi bi-twitter"
-                        style={{ fontSize:30, color: "dodgerblue"}}>
-                    </i>
-                </Navbar.Brand>
-                <Navbar.Collapse className="justify-content-end">
-                    <Button variant="primary" onClick={handleLogout}>
-                        Logout
-                    </Button>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-        <Container className="mt-3">
-            <h2>Your Profile</h2>
+        <Container>
+            <Row>
+                <ProfileSideBar handleLogout={handleLogout} />
+            </Row>
         </Container>
-        </>
     )
-
 }
