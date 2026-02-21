@@ -3,6 +3,7 @@ import { Container, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileSideBar from "./components/ProfileSideBar";
+import ProfileMidBody from "./components/ProfileMidBody";
 
 export default function ProfilePage() {
     const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken") || "");
@@ -24,6 +25,7 @@ export default function ProfilePage() {
         <Container>
             <Row>
                 <ProfileSideBar handleLogout={handleLogout} />
+                <ProfileMidBody/>
             </Row>
         </Container>
     )
