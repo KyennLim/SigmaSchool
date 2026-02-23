@@ -1,7 +1,7 @@
 import { Row, Col, Button, Image } from "react-bootstrap";
 
 
-export default function ProfilePostCard() {
+export default function ProfilePostCard({ content }) {
     const pic = "https://media.licdn.com/dms/image/v2/D5635AQHtu2XlzM2EVQ/profile-framedphoto-shrink_200_200/B56Znhh8N.J8Ac-/0/1760425395488?e=1772308800&v=beta&t=224nHhaupf_wPxIXzv5vMLKMVhmNpUhkj08BBcJVHqo";
 
     return (
@@ -19,7 +19,7 @@ export default function ProfilePostCard() {
       <Col>
         <strong>Kyenn</strong>
         <span> @Kyenn.gmail.com · Apr 16</span>
-        <p>WEEElcome</p>
+        <p>{content}</p>
         <div className="d-flex justify-content-between">
           <Button variant="light">
             <i className="bi bi-chat"></i>
