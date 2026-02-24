@@ -128,6 +128,29 @@ app.get('/posts/user/:user_id', async (req, res)=>{
     }
 })
 
+app.post('/posts', async (req, res) => {
+    const { title, content, user_id } = req.body;
+    const client = await pool.connect();
+    try {
+        // check if user exist
+        const userExists = await client.query('SELECT id FROM users WHERE id = $1', [user_id]);
+        if (userExists.rowCount > 0){
+            // User exists, add posts
+            const post = await client.query('INSERT INTO posts (title, content, user_id, created_at) VALUES ($1,$2,$3, CURRENT_TIMESTAMP) RETURNING *', [title, content, user_id]);
+            // Send new post data back to client
+            res.json(post.rows[0]);
+        } else {
+            // User does not exist
+            res.status(400).json({ error: "User does not exist"});
+        }
+    } catch (err) {
+        console.log(err.stack);
+        res.status(500).json({ error: "something went wrong, please try again later! "});
+    } finally {
+        client.release();
+    }
+})
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/index.html'));
 });

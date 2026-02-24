@@ -41,6 +41,7 @@ export default function ProfileMidBody() {
           marginLeft: 15,
         }}
       />
+      <br />
 
       <Row className="justify-content-end">
         <Col xs="auto">
