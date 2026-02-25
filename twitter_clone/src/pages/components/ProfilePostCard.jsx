@@ -1,8 +1,17 @@
 import { Row, Col, Button, Image } from "react-bootstrap";
+import { useEffect, useState } from "react";
 
 
-export default function ProfilePostCard({ content }) {
+export default function ProfilePostCard({ content, postId }) {
+    const [likes, setLikes] = useState(0);
     const pic = "https://media.licdn.com/dms/image/v2/D5635AQHtu2XlzM2EVQ/profile-framedphoto-shrink_200_200/B56Znhh8N.J8Ac-/0/1760425395488?e=1772308800&v=beta&t=224nHhaupf_wPxIXzv5vMLKMVhmNpUhkj08BBcJVHqo";
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/likes/post/${postId}`)
+            .then((response) => response.json())
+            .then((data) => setLikes(data.length))
+            .catch((error) => console.error("Error:", error));
+    },[postId]);
 
     return (
     <Row
@@ -28,7 +37,7 @@ export default function ProfilePostCard({ content }) {
             <i className="bi bi-repeat"></i>
           </Button>
           <Button variant="light">
-            <i className="bi bi-heart"> 100</i>
+            <i className="bi bi-heart">{likes}</i>
           </Button>
           <Button variant="light">
             <i className="bi bi-graph-up"></i>
