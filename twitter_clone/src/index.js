@@ -9,6 +9,9 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
 const { DATABASE_URL, SECRET_KEY } = process.env;
 
@@ -84,7 +87,7 @@ app.post("/posts", async (req, res) => {
   }
 });
 
-app.get("/likes/post/:post_id", async (req, res) => {
+app.get('/likes/post/:post_id', async (req, res) => {
   const { post_id } = req.params;
   const client = await pool.connect();
   try {
@@ -92,7 +95,7 @@ app.get("/likes/post/:post_id", async (req, res) => {
       `SELECT users.username, users.id AS user_id, likes.id AS likes_id
        FROM likes
        JOIN users ON likes.user_id = users.id
-       WHERE likes.post_id = $1
+       WHERE likes.post_id = $1 AND active = true
        `,[post_id],
     );
     res.json(likes.rows);
@@ -208,8 +211,63 @@ app.get("/username", (req, res) => {
   }
 });
 
+//Endpoint to like a post
+app.post("/like", async (req, res) => {
+    const { user_id, post_id } = req.body;
+    const client = await pool.connect();
+
+    try {
+        // check if an inactive like for this user and post already exists
+        const prevlike = await client.query(`
+            SELECT * FROM likes WHERE user_id = $1 AND post_id = $2 AND active = false
+        `, [user_id, post_id]);
+
+        if (prevlike.rowCount > 0) {
+            // if the inactive like exists, update it to active
+            const newLike = await client.query(`
+                UPDATE likes SET active = true WHERE id = $1 RETURNING *
+            `, [prevlike.rows[0].id]);
+            res.json(newLike.rows[0]);
+        } else {
+            // if it does not exist, insert new like row with active as true
+            const newLike = await client.query(`
+                INSERT INTO likes (user_id, post_id, created_at, active) 
+                VALUES ($1, $2, CURRENT_TIMESTAMP, true) 
+                RETURNING *`
+            , [user_id, post_id]);
+            res.json(newLike.rows[0]);
+        }
+    } catch (error) {
+        console.error("Error", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
+
+//Endpoint to unlike a post
+app.put('/likes/:userId/:postId', async (req, res) => {
+    const { userId, postId} = req.params;
+    const client = await pool.connect();
+
+    try {
+        // Update the like row to inactive
+        await client.query(`
+            UPDATE likes 
+            SET active = false 
+            WHERE user_id = $1 AND post_id = $2 AND active = true
+        `, [userId, postId]);
+        res.json({ message: "The like has been removed successfully" });
+    } catch (error) {
+        console.error("Error", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
+
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname + "/index.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(3000, () => {
